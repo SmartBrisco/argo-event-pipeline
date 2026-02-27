@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: "2026-02-26T00:52:29Z"
+  name: webhookRoleBinding
+  resourceVersion: "19906"
+  uid: 5e3c9039-7c80-4311-9e0b-6fd187121bfe
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: webhookRole
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: argo-events

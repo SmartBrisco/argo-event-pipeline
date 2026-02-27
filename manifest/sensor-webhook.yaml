@@ -1,0 +1,143 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata: 
+  name: webhook
+  namespace: argo-events
+spec:
+  dependencies:
+    - name: webhook
+      eventSourceName: webhook
+      eventName: push
+      namespace: argo-events
+  triggers:
+    - template:
+        name: webhook-trigger
+        argoWorkflow:
+          group: argoproj.io
+          version: v1alpha1
+          resource: workflows
+          operation: submit
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: webhook-trigger-
+                namespace: argo-workflows
+                annotations:
+                   workflows.argoproj.io/default-artifact-repository: empty
+              spec:
+                entrypoint: entrypoint
+                onExit: onExit
+                templates:
+                  - name: entrypoint
+                    steps:
+                      - - name: pipeline
+                          template: pipeline
+                      - - name: trivy-scan
+                          template: trivy-scan                   
+                      - - name: mock
+                          template: mock
+                  - name: trivy-scan
+                    container:
+                      image: aquasec/trivy:latest
+                      command: [trivy]
+                      args: ["image", "--severity", "HIGH,CRITICAL", "busybox:latest"]
+                  - name: mock
+                    script:
+                      image: python:3.11-slim
+                      command: [python]
+                      source: |
+                        import json
+                        import os
+                        new_ticket_payload= {
+                        "fields": {
+                            "project": {"key": "CHG"},
+                            "issuetype": { "name": "Task"},
+                            "summary": "Automated Change Management ticket"
+                            }
+                        }
+                        existing_ticket_id = os.getenv("EXISTING_TICKET_ID", "REPLACE_WITH_EXISTING_TICKET_KEY")  # e.g. "ABC-123"
+
+                        link_payload = { 
+                            "type": { "name": "Relates" },
+                            "inwardIssue": {"key": existing_ticket_id},   # replace with real existing ticket key
+                            "outwardIssue": {"key": "NEW-KEY"}        # replace with new ticket key returned by Jira  
+                        }
+                        print("Creating Jira ticket with payload:")
+                        print(json.dumps(new_ticket_payload, indent=2))
+                        print("Linking to existing ticket:")
+                        print(json.dumps(link_payload, indent=2))
+                        print("Done - tickets linked successfully!") 
+                  - name: pipeline                                  
+                    container:
+                      image: busybox:latest
+                      command: [echo]
+                      args: ["pipeline triggered by webhook event"]
+                  - name: onExit
+                    steps:
+                      - - name: ai-analysis
+                          template: ai-analysis
+                          when: "{{workflow.status}} == Failed"                  
+                  - name: ai-analysis
+                    script:
+                      env:
+                        - name: WORKFLOW_NAME
+                          value: "{{workflow.name}}"
+                        - name: WORKFLOW_STATUS
+                          value: "{{workflow.status}}"                    
+                      image: python:3.11-slim
+                      command: [python]
+                      source: |
+                        import json
+                        import os
+                        import subprocess
+                        subprocess.run(["pip", "install", "requests", "-q"], check=True)
+                        import requests
+
+                        # Read workflow information from environment (set defaults if missing)
+                        workflow_name = os.getenv("WORKFLOW_NAME", "UNKNOWN_WORKFLOW")
+                        workflow_status = os.getenv("WORKFLOW_STATUS", "UNKNOWN_STATUS")
+
+                        # Build payload first
+                        config = {
+                            "model": "tinyllama",
+                            "prompt": f"Workflow {workflow_name} finished with status {workflow_status}. Provide a brief plain English summary of what likely went wrong and suggest next steps.",
+                            "stream": False,
+                        }
+
+                        # Primary attempt: use requests
+                        try:
+                            response = requests.post(
+                                "http://ollama-svc:11434/api/generate",
+                                json=config,
+                                timeout=10,
+                            )
+                            response.raise_for_status()
+                            result = response.json()
+                            print("Summary of root analysis:")
+                            print(result.get("response", "No text found in response"))
+                        except Exception as e:
+                            print("requests POST failed:", e)
+                            # Fallback: use curl via subprocess
+                            try:
+                                cp = subprocess.run([
+                                    "curl",
+                                    "-sS",
+                                    "-X",
+                                    "POST",
+                                    "http://ollama-svc:11434/api/generate",
+                                    "-H",
+                                    "Content-Type: application/json",
+                                    "-d",
+                                    json.dumps(config),
+                                ], capture_output=True, text=True)
+                                if cp.returncode == 0:
+                                    result = json.loads(cp.stdout)
+                                    print("Summary of root analysis (curl):")
+                                    print(result.get("response", "No text found in response"))
+                                else:
+                                    print(f"curl failed: returncode {cp.returncode}")
+                                    print("stderr:", cp.stderr)
+                            except Exception as e2:
+                                print("curl fallback failed:", e2)

@@ -139,8 +139,8 @@ Apply, fire the webhook, and check the ai-analysis step logs in the Argo UI.
 
 ## Screenshots
 
-### Webhook Structure ###
-![Webhook Structure](src/webhook_structure.png)
+### Successful Workflow Run ###
+![Successful Workflow Run](src/successful_workflow.png)
 
 ### Mock — Ticket Payload Output
 ![Confirmation Log](src/success_log.png)

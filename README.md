@@ -139,17 +139,14 @@ Apply, fire the webhook, and check the ai-analysis step logs in the Argo UI.
 
 ## Screenshots
 
-### Pipeline DAG — Successful Run
-![Pipeline Structure](src/pipeline_structure.png)
-
-### Mock — Ticket Payload Output
-![Confirmation Log](src/confirmation_log.png)
-
-### AI Failure Analysis Output
-![Failed Log](src/failed_log.png)
-
 ### Webhook Structure ###
 ![Webhook Structure](src/webhook_structure.png)
+
+### Mock — Ticket Payload Output
+![Confirmation Log](src/success_log.png)
+
+### AI Failure Analysis Output
+![Failed Log](src/fail_log.png)
 
 ## Troubleshooting
 

@@ -220,3 +220,9 @@ the cluster.
 It fits in memory on a local kind cluster. For production, swap it for
 a larger model on a node with real resources. The integration pattern
 is the same regardless.
+
+
+## Part of a Three-Project Platform Engineering Portfolio
+- **Project 1** — Argo Events CI/CD Pipeline (this project) — Event-driven application pipeline with AI-powered failure analysis
+- **Project 2** — [GitOps Infrastructure Pipeline](https://github.com/SmartBrisco/gitops-infra-pipeline) — GitHub Actions and Terraform infrastructure automation
+- **Project 3** — [Platform Observability Stack](https://github.com/SmartBrisco/platform-observability) — Unified observability with OpenTelemetry, Jaeger, Prometheus, and Grafana observing this pipeline

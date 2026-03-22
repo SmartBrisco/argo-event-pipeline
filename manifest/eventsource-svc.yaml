@@ -5,7 +5,7 @@ metadata:
   namespace: argo-events
 spec:
   selector:
-    app: webhook
+    eventsource-name: webhook
   ports:
     - protocol: TCP
       port: 12000

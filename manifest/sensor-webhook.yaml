@@ -24,7 +24,6 @@ spec:
               metadata:
                 generateName: webhook-trigger-
                 namespace: argo-workflows
-                annotations:
               spec:
                 entrypoint: entrypoint
                 onExit: onExit

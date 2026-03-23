@@ -223,7 +223,7 @@ is the same regardless.
 
 
 ## Part of a Four-Project Platform Engineering Portfolio
-Part of a Platform Engineering Portfolio
+
 - **Project 1** — Argo Events CI/CD Pipeline (this project) — Event-driven application pipeline with AI-powered failure analysis
 - **Project 2** — [GitOps Infrastructure Pipeline](https://github.com/SmartBrisco/gitops-infra-pipeline) — GitHub Actions and Terraform infrastructure automation
 - **Project 3** — [Platform Observability Stack](https://github.com/SmartBrisco/platform-observability) — Unified observability with OpenTelemetry, Jaeger, Prometheus, and Grafana observing this pipeline

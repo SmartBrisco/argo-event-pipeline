@@ -25,7 +25,6 @@ spec:
                 generateName: webhook-trigger-
                 namespace: argo-workflows
                 annotations:
-                   workflows.argoproj.io/default-artifact-repository: empty
               spec:
                 entrypoint: entrypoint
                 onExit: onExit

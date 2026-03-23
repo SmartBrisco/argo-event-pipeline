@@ -222,8 +222,10 @@ a larger model on a node with real resources. The integration pattern
 is the same regardless.
 
 
-## Part of a Three-Project Platform Engineering Portfolio
+## Part of a Four-Project Platform Engineering Portfolio
+Part of a Platform Engineering Portfolio
 - **Project 1** — Argo Events CI/CD Pipeline (this project) — Event-driven application pipeline with AI-powered failure analysis
 - **Project 2** — [GitOps Infrastructure Pipeline](https://github.com/SmartBrisco/gitops-infra-pipeline) — GitHub Actions and Terraform infrastructure automation
 - **Project 3** — [Platform Observability Stack](https://github.com/SmartBrisco/platform-observability) — Unified observability with OpenTelemetry, Jaeger, Prometheus, and Grafana observing this pipeline
+- **Project 4** — [Namespace Provisioner](https://github.com/SmartBrisco/namespace-provisioner) — Kubernetes operator in Go for policy-enforced namespace provisioning
 - **Bootstrap** — [Platform](https://github.com/SmartBrisco/Platform) — One command to spin up the full platform locally in under 10 minutes

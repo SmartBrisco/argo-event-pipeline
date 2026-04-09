@@ -1,0 +1,25 @@
+name: Deploy on Image Built
+
+on:
+  repository_dispatch:
+    types: [image-built]
+
+jobs:
+  deploy:
+    name: Trigger Argo Events Webhook
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log incoming payload
+        run: |
+          echo "Image: ${{ github.event.client_payload.image }}"
+          echo "Commit: ${{ github.event.client_payload.commit }}"
+
+      - name: Trigger Argo Events webhook
+        run: |
+          curl -d '{
+            "image": "${{ github.event.client_payload.image }}",
+            "commit": "${{ github.event.client_payload.commit }}"
+          }' \
+          -H "Content-Type: application/json" \
+          -X POST http://localhost:12000/push
